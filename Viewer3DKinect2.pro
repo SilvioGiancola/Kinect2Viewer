@@ -14,16 +14,14 @@ CONFIG   += no_keyword
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    mykinect.cpp
 
 
 
 CONFIG += link_pkgconfig
 PKGCONFIG += /home/silvio/git/libfreenect2/depends/libusb/lib/pkgconfig/libusb-1.0.pc
-PKGCONFIG += /usr/local/lib/pkgconfig/opencv.pc
 
-INCLUDEPATH += /usr/include
-DEPENDPATH += /usr/include
 
 
 
@@ -299,3 +297,6 @@ DEPENDPATH += /home/silvio/git/libfreenect2/examples/protonect/include
 #LIBS += -L/usr/local/lib -lfreenect2
 #INCLUDEPATH += /usr/local/include
 #DEPENDPATH += /usr/local/include
+
+HEADERS += \
+    mykinect.h
