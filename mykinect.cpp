@@ -22,18 +22,20 @@ int MyKinect::Open()
     if(freenect2.enumerateDevices() == 0)
     {
         std::cout << "no device connected!" << std::endl;
-        return -1;
+        return ERROR;
     }
 
 
-    pipeline = new libfreenect2::CpuPacketPipeline();
-
-#ifdef LIBFREENECT2_WITH_OPENGL_SUPPORT
-    pipeline = new libfreenect2::OpenGLPacketPipeline();
-#endif
+  //  pipeline = new libfreenect2::CpuPacketPipeline();
 
 #ifdef LIBFREENECT2_WITH_OPENCL_SUPPORT
+    pipeline = new libfreenect2::OpenCLPacketPipeline();
+#else
+#ifdef LIBFREENECT2_WITH_OPENGL_SUPPORT
     pipeline = new libfreenect2::OpenGLPacketPipeline();
+#else
+    pipeline = new libfreenect2::CpuPacketPipeline();
+#endif
 #endif
 
     if (_serial == "")
@@ -163,7 +165,7 @@ PointCloudT::Ptr MyKinect::Grab()
         }
     }
 
- //   std::cout << QDateTime::currentDateTime().toString().toStdString() << " time elapsed :" << t.elapsed() << "  PointCloud is : " << PC->size() << std::endl;
+    std::cout << QDateTime::currentDateTime().toString().toStdString() << " time elapsed :" << t.elapsed() << "  PointCloud is : " << PC->size() << std::endl;
 
 
     return PC;

@@ -1,4 +1,4 @@
-#-------------------------------------------------
+P#-------------------------------------------------
 #
 # Project created by QtCreator 2015-02-05T15:46:49
 #
@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-TARGET = Viewer3DKinect2
+TARGET = Kinect2Viewer
 CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   += no_keyword
