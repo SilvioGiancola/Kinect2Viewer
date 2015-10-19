@@ -13,6 +13,7 @@ find_package (freenect2 REQUIRED)
 
 
 include_directories (../Kinect2Viewer) # include the project in se
+include_directories (../Kinect2Viewer-build) # include the project in se
 
 include_directories (${freenect2_INCLUDE_DIR})
 #link_directories    (${freenect2_LIBRARY})
