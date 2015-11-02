@@ -6,12 +6,13 @@ MyKinect::MyKinect(std::string serial)
     listener = new libfreenect2::SyncMultiFrameListener(libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
     _serial = serial;
     _open = false;
-    _run = false;
+    _play = false;
+    _save = false;
 }
 
 
 
-int MyKinect::Open()
+int MyKinect::Open(int i)
 {
     if (_open)
     {
@@ -39,7 +40,7 @@ int MyKinect::Open()
 #endif
 
     if (_serial == "")
-        _serial = freenect2.getDefaultDeviceSerialNumber();
+        _serial = freenect2.getDeviceSerialNumber(i);
 
     dev = freenect2.openDevice(_serial,pipeline);
 
@@ -62,6 +63,11 @@ int MyKinect::Open()
 
     _open = true;
 
+    PC.reset(new PointCloudT());
+    PC->resize(512 * 424); // set the memory size to allocate
+    PC->height = 424;        // set the height
+    PC->width = 512;          // set the width
+    PC->is_dense = false;                   // Kinect V2 returns organized and not dense point clouds
 
     return SUCCESS;
 }
@@ -124,11 +130,11 @@ PointCloudT::Ptr MyKinect::Grab()
 
 
     // Initialize my Point Cloud
-    PC.reset(new PointCloudT());
-    PC->resize(undistorted.width * undistorted.height); // set the memory size to allocate
-    PC->height = undistorted.height;        // set the height
-    PC->width = undistorted.width;          // set the width
-    PC->is_dense = false;                   // Kinect V2 returns organized and not dense point clouds
+ //   PC.reset(new PointCloudT());
+ //   PC->resize(undistorted.width * undistorted.height); // set the memory size to allocate
+ //   PC->height = undistorted.height;        // set the height
+ //   PC->width = undistorted.width;          // set the width
+ //   PC->is_dense = false;                   // Kinect V2 returns organized and not dense point clouds
     PC->header.stamp = timestamp.toMSecsSinceEpoch();                               // the stamp correspond to the acquisition time
     PC->header.frame_id = QString("%1/PointClouds/Kinect%2_%3.pcd").arg(QDir::homePath()).arg(_serial.c_str()).arg(timestamp.toString("yyyy-MM-dd-HH:mm:ss:zzz")).toStdString();
 

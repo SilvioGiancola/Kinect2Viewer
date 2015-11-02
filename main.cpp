@@ -41,10 +41,12 @@
 
 using namespace std;
 
-MyKinect kin;
-bool play = false;
-bool save = false;
+
+MyKinect kin1;
+MyKinect kin2;
+
 uint XStep = 150;
+uint YStep = 70;
 uint Size = 30;
 
 
@@ -56,7 +58,7 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void
     {
         cout << "KeyboardEvent: " << event.getKeySym ()  << endl;
 
- /*       if (event.getKeySym () == "h" )
+        /*       if (event.getKeySym () == "h" )
         {
             cout << "HELP - Press:" << endl;
             cout << "   - o for Opening Kinect Connection" << endl;
@@ -80,7 +82,6 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void
     return;
 }
 
-
 void mouseEventOccurred (const pcl::visualization::MouseEvent &event, void* viewer_void)
 {
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
@@ -89,48 +90,90 @@ void mouseEventOccurred (const pcl::visualization::MouseEvent &event, void* view
     {
         std::cout << "Left mouse button released at position (" << event.getX () << ", " << event.getY () << ")" << std::endl;
 
-        if (event.getY() < Size+10)
+
+        if (event.getY() < YStep+10)
         {
             if (event.getX() < XStep*1)
             {
-                if (kin._open)
+                if (!kin1._open)
                 {
-                    if (kin.Close() == SUCCESS)
-                        viewer->updateText("OPEN",   XStep*0, 10, Size, 1, 1, 1, "OPEN/CLOSE");
+                    if (kin1.Open(0) == SUCCESS)
+                        viewer->updateText("CONN.", XStep*0, YStep*0+10, Size, 1, 1, 1, "CONNECT1");
                 }
                 else
                 {
-                    if (kin.Open() == SUCCESS)
-                        viewer->updateText("CLOSE",  XStep*0, 10, Size, 1, 1, 1, "OPEN/CLOSE");
+                    if (kin1.Close() == SUCCESS)
+                        viewer->updateText("CONN.",  XStep*0, YStep*0+10, Size, 0.3,0.3,0.3, "CONNECT1");
                 }
             }
 
 
             else if (event.getX() < XStep*2)
             {
-                play = !play;
-                if (play)
-                    viewer->updateText("PAUSE",  XStep*1, 10, Size, 1, 1, 1, "PLAY/PAUSE");
+                kin1._play= !kin1._play;
+                if (kin1._play)
+                    viewer->updateText("PLAY",  XStep*1, YStep*0+10, Size, 1, 1, 1, "PLAY1");
 
                 else
-                    viewer->updateText("PLAY",   XStep*1, 10, Size, 1, 1, 1, "PLAY/PAUSE");
+                    viewer->updateText("PLAY",   XStep*1, YStep*0+10, Size, 0.3,0.3,0.3, "PLAY1");
             }
 
 
             else if (event.getX() < XStep*3)
             {
-                save = !save;
-                if (save)
-                    viewer->updateText("SAVE",  XStep*2, 10, Size, 1, 1, 1, "SAVE");
+                kin1._save = !kin1._save;
+                if (kin1._save)
+                    viewer->updateText("SAVE",  XStep*2, YStep*0+10, Size, 1, 1, 1, "SAVE1");
 
                 else
-                    viewer->updateText("SAVE",  XStep*2, 10, Size, 0.3, 0.3, 0.3, "SAVE");
+                    viewer->updateText("SAVE",  XStep*2, YStep*0+10, Size, 0.3, 0.3, 0.3, "SAVE1");
             }
+
+
+        }
+        else if (event.getY() < YStep*2+10)
+        {
+            if (event.getX() < XStep*1)
+            {
+                if (!kin2._open)
+                {
+                    if (kin2.Open(1) == SUCCESS)
+                        viewer->updateText("CONN.", XStep*0, YStep*1+10, Size, 1, 1, 1, "CONNECT2");
+                }
+                else
+                {
+                    if (kin2.Close() == SUCCESS)
+                        viewer->updateText("CONN.",  XStep*0, YStep*1+10, Size, 0.3,0.3,0.3, "CONNECT2");
+                }
+            }
+
+
+            else if (event.getX() < XStep*2)
+            {
+                kin2._play = !kin2._play;
+                if (kin2._play)
+                    viewer->updateText("PLAY",  XStep*1, YStep*1+10, Size, 1, 1, 1, "PLAY2");
+
+                else
+                    viewer->updateText("PLAY",   XStep*1, YStep*1+10, Size, 0.3,0.3,0.3, "PLAY2");
+            }
+
+
+            else if (event.getX() < XStep*3)
+            {
+                kin2._save = !kin2._save;
+                if (kin2._save)
+                    viewer->updateText("SAVE",  XStep*2, YStep*1+10, Size, 1, 1, 1, "SAVE2");
+
+                else
+                    viewer->updateText("SAVE",  XStep*2, YStep*1+10, Size, 0.3, 0.3, 0.3, "SAVE2");
+            }
+
+
         }
     }
 }
 
-#include <QTime>
 
 int main(int argc, char *argv[])
 {    
@@ -142,49 +185,68 @@ int main(int argc, char *argv[])
                               0.5,0.5,0.5, // guardo un punto centrale
                               0,1,0);   // orientato con la y verso l'alto
 
-    viewer->addText("OPEN",  XStep*0, 10, Size, 1, 1, 1, "OPEN/CLOSE");
-    viewer->addText("PLAY",  XStep*1, 10, Size, 1, 1, 1, "PLAY/PAUSE");
-    viewer->addText("SAVE",  XStep*2, 10, Size, 0.3, 0.3, 0.3, "SAVE");
+
+    viewer->addText("CONN.",  XStep*0, YStep*0 + 10, Size, 0.3, 0.3, 0.3, "CONNECT1");
+    viewer->addText("PLAY",   XStep*1, YStep*0 + 10, Size, 0.3, 0.3, 0.3, "PLAY1");
+    viewer->addText("SAVE",   XStep*2, YStep*0 + 10, Size, 0.3, 0.3, 0.3, "SAVE1");
+
+    viewer->addText("CONN.",  XStep*0, YStep*1 + 10, Size, 0.3, 0.3, 0.3, "CONNECT2");
+    viewer->addText("PLAY",   XStep*1, YStep*1 + 10, Size, 0.3, 0.3, 0.3, "PLAY2");
+    viewer->addText("SAVE",   XStep*2, YStep*1 + 10, Size, 0.3, 0.3, 0.3, "SAVE2");
+
+
+
     viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
     viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
 
+    PointCloudT::Ptr KinectPointCloud1(new PointCloudT);
+    pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor1(KinectPointCloud1);
+    viewer->addPointCloud(KinectPointCloud1, KinectColor1, "Kinect1");
 
-    PointCloudT::Ptr KinectPointCloud(new PointCloudT);
-    pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor(KinectPointCloud);
-    viewer->addPointCloud(KinectPointCloud, KinectColor, "Kinect2");
 
-   //  viewer->addText("",XStep,0,10,1,1,1,"AcqTime");
-     viewer->addText("FPS",XStep,0,10,1,1,1,"FPS");
+    PointCloudT::Ptr KinectPointCloud2(new PointCloudT);
+    pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor2(KinectPointCloud2);
+    viewer->addPointCloud(KinectPointCloud2, KinectColor2, "Kinect2");
 
-     QTime t;
-     t.start();
+
+    viewer->addText("FPS",XStep,0,10,1,1,1,"FPS");
+
+    QTime t;
+    t.start();
 
     while (!viewer->wasStopped ())
     {
         t.restart();
-        if (kin._open)
-        {
-            if (play)
-            {
-                KinectPointCloud = kin.Grab();
 
-                if (save)
-                {
-                    pcl::io::savePCDFileBinary(KinectPointCloud->header.frame_id, *KinectPointCloud);
-                }
-                viewer->updateText(QString("FPS = %1 Hz").arg(1000.0f/t.elapsed()).toStdString(),XStep,0,10,1,1,1,"FPS");
-            }
-        }
-        else
-            KinectPointCloud.reset(new PointCloudT());
+        if (kin1._play)            KinectPointCloud1 = kin1.Grab();
+
+        if (kin2._play)            KinectPointCloud2 = kin2.Grab();
+
+        if (kin1._play && kin1._save)
+            pcl::io::savePCDFileBinary(KinectPointCloud1->header.frame_id, *KinectPointCloud1);
+
+        if (kin2._play && kin2._save)
+            pcl::io::savePCDFileBinary(KinectPointCloud2->header.frame_id, *KinectPointCloud2);
 
 
-        pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor(KinectPointCloud);
-        viewer->updatePointCloud(KinectPointCloud,KinectColor,"Kinect2");
+        if (!kin1._play)
+            KinectPointCloud1.reset(new PointCloudT());
+        if (!kin2._play)
+            KinectPointCloud2.reset(new PointCloudT());
 
 
+        viewer->updateText(QString("FPS = %1 Hz").arg(1000.0f/t.elapsed()).toStdString(),XStep,0,10,1,1,1,"FPS");
+
+        pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor1(KinectPointCloud1);
+        viewer->updatePointCloud(KinectPointCloud1,KinectColor1,"Kinect1");
+
+        pcl::visualization::PointCloudColorHandlerRGBField<PointT> KinectColor2(KinectPointCloud2);
+        viewer->updatePointCloud(KinectPointCloud2,KinectColor2,"Kinect2");
 
         viewer->spinOnce (1);
+
+
+
         // cout << QString("Acquisition Time = %1 ms").arg(t.elapsed()).toStdString() << endl;
         //  viewer->updateText(QString("Acquisition Time = %1 ms").arg(t.elapsed()).toStdString(),50,50,20,1,1,1,"AcqTime");
 

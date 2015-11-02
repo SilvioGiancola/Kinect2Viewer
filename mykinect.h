@@ -2,14 +2,15 @@
 #define MYKINECT_H
 
 
+
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
 #include <libfreenect2/libfreenect2.hpp>
 #include <libfreenect2/frame_listener_impl.h>
-#include <libfreenect2/threading.h>
 #include <libfreenect2/registration.h>
 #include <libfreenect2/packet_pipeline.h>
+
 
 #include <QTime>
 #include <QDir>
@@ -26,11 +27,13 @@ class MyKinect
 public:
     MyKinect(std::string serial = "");
 
-    int Open();
+    int Open(int i=0);
     int Close();
     PointCloudT::Ptr Grab();
 
     bool _open;
+    bool _play;
+    bool _save;
 
 private:
     libfreenect2::Freenect2 freenect2;
@@ -41,7 +44,6 @@ private:
 
 
 
-    bool _run;
 
     std::string _serial;
 
